@@ -14,12 +14,14 @@ parser.add_argument("-nolf", "--removecrlf", help="remove cr, lf and crlf values
 args = parser.parse_args()
 
 quiet = args.quiet
+
 start_time = datetime.now()
 
 def OpenFile(filename):
     f = open(outputfile, 'w', newline='', encoding="utf-8")
     w = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
     return w
+
 
 outputfile = "{outputdir}\\{table}.csv".format(outputdir=args.outputdir, table=args.table)
 
@@ -60,7 +62,7 @@ for row in cursor:
             logging.info("Starting new file: %s", outputfile)
         w.writerow(header)
 
-    if args.nolf:
+    if args.removecrlf:
         newrow = [column.replace("\r\n","&#xD;&#xA;").replace("\r","&#xD;").replace("\n", "&#xA;") if type(column) == str else column for column in row]
     else:
         newrow = row             
@@ -72,8 +74,4 @@ for row in cursor:
         if not quiet:
             logging.info("     Exported %s rows", rowcounter)
 
-elapsed_time = datetime.now() - start_time
-
-if not quiet:
-    logging.info("Done! exported %s rows in %s", rowcounter, elapsed_time)
 
