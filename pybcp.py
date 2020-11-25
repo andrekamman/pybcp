@@ -37,18 +37,16 @@ connection = pyodbc.connect('Driver={SQL Server Native Client 11.0};'
     'Trusted_Connection=yes;'
 )
 
-metaquery = "select c.name as columnname from sys.tables t join sys.columns c on c.object_id = t.object_id where t.name = '{table}' order by c.column_id".format(table=args.table)
 query = "select * from {table}".format(table=args.table)
 
 if not quiet:
     logging.info("Getting column names for table: %s", args.table)
 
 cursor = connection.cursor()
-cursor.execute(metaquery)
-
-header = [row.columnname for row in cursor]
-
 cursor.execute(query)
+
+header = [i[0] for i in cursor.description]
+
 rowcounter = 0
 filecounter = 0
 
